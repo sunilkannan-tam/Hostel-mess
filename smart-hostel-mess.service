@@ -1,0 +1,31 @@
+# Systemd unit for auto-starting and auto-restarting the mess server.
+# On unreliable power, the process needs to come back on its own after
+# a crash or reboot -- nobody should have to be physically present to
+# restart it by hand.
+#
+# Install (as root):
+#   cp deploy/smart-hostel-mess.service /etc/systemd/system/
+#   # edit the User, WorkingDirectory and ExecStart paths below to match
+#   # where you actually placed the project and your Python interpreter
+#   systemctl daemon-reload
+#   systemctl enable --now smart-hostel-mess
+#
+# Check status / logs:
+#   systemctl status smart-hostel-mess
+#   journalctl -u smart-hostel-mess -f
+
+[Unit]
+Description=Smart Hostel Mess Management System
+After=network.target
+
+[Service]
+Type=simple
+User=mess
+WorkingDirectory=/opt/smart-hostel-mess
+EnvironmentFile=/opt/smart-hostel-mess/.env
+ExecStart=/opt/smart-hostel-mess/venv/bin/python run.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
